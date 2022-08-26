@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Services\ClientFactory;
 use App\Services\CsvParser;
 use App\Services\CurrencyConverter;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -21,12 +22,15 @@ class CommissionFeeCalculatorCommand extends Command
 
     private CsvParser $csvParser;
     private CurrencyConverter $currencyConverter;
+    private ClientFactory $clientFactory;
 
-    public function __construct(CsvParser $csvParser, CurrencyConverter $currencyConverter)
+    public function __construct(CsvParser $csvParser, CurrencyConverter $currencyConverter, ClientFactory $clientFactory)
     {
         $this->currencyConverter = $currencyConverter;
         $this->csvParser = $csvParser;
+        $this->clientFactory = $clientFactory;
         parent::__construct();
+
     }
 
     protected function configure(): void
@@ -46,23 +50,37 @@ class CommissionFeeCalculatorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // use the parseCSV() function
-        $csvArray = $this->csvParser->parseCsv($input);
+        $csvPath = $input->getArgument('csvPath');
+        $fileName = $input->getArgument('fileName');
+        $csvArray = $this->csvParser->parseCsv($csvPath, $fileName);
 
-//        var_dump($csvArray);
+        foreach ($csvArray as $record){
+            $this->clientFactory->createClientIfNotExist($record['clientId'], $record['clientType']);
+        }
+
+        $testAmountInEuro = $this->currencyConverter->convertToEuro(3.92, "BGN");
+        $testClient = $this->clientFactory->findById($csvArray[0]['clientId']);
+
+        $testClient->calculateWithdrawCommissionFee(new \DateTimeImmutable('2015-01-04'), $testAmountInEuro);
+
+        var_dump($testClient->testOnlyGetHistoryWithdraws());
+        die();
+
+
+//        var_dump($this->clientFactory->getClients());
 //        die;
 
 //        var_dump($this->currencyConverter->convert(1, 'AZN', 'BGN'));
 //        die();
 
 
-        foreach ($csvArray as $record){
-            $output->writeln($record);
-        }
-       // return $csv; // I added this
+//        foreach ($csvArray as $record){
+//            $output->writeln($record);
+//        }
 
         return Command::SUCCESS;
     }
+
 
     /**
      * Parse a csv file

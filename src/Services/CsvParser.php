@@ -6,10 +6,10 @@ use Symfony\Component\Finder\Finder;
 
 class CsvParser
 {
-    public function parseCsv($input): array
+    public function parseCsv($csvPath, $fileName): array
     {
-        $csvPath = $input->getArgument('csvPath');
-        $fileName = $input->getArgument('fileName');
+       // $csvPath = $input->getArgument('csvPath');
+        //$fileName = $input->getArgument('fileName');
 
         $finder = new Finder();
         $finder->files()
@@ -32,13 +32,16 @@ class CsvParser
         return $rows;
     }
 
+    /**
+     * @throws \Exception
+     */
     private function parseRecordToArray($record): array
     {
 //        var_dump($record);
 //        die();
         $parsedRecord = [];
         $temp = explode(',', $record);
-        $parsedRecord['date'] = $temp[0];
+        $parsedRecord['date'] = new \DateTimeImmutable($temp[0]);
         $parsedRecord['clientId'] = $temp[1];
         $parsedRecord['clientType'] = $temp[2];
         $parsedRecord['operationType'] = $temp[3];

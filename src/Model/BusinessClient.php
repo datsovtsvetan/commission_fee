@@ -4,7 +4,7 @@ namespace App\Model;
 
 class BusinessClient extends BaseClient
 {
-    private array $withdrawsPerWeek;
+   // private array $withdrawsPerWeek;
 
 
     /**
@@ -14,12 +14,12 @@ class BusinessClient extends BaseClient
 
     public function __construct(int $id)
     {
-        $this->withdrawlsPerWeek = [];
+        //$this->withdrawsPerWeek = [];
         parent::__construct($id);
     }
 
 
-    function withdraw(float $amount, string $currency): float|int
+    function calculateWithdrawCommissionFee(\DateTimeImmutable $dateTime, float $amountInEuro): float|int
     {
         // TODO: Implement withdraw() method.
 
