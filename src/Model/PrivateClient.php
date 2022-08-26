@@ -20,5 +20,4 @@ class PrivateClient extends BaseClient
         return 999.99;
     }
 
-
 }

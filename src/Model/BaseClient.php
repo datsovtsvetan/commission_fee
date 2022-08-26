@@ -49,4 +49,5 @@ abstract class BaseClient
 
     abstract function calculateWithdrawCommissionFee(\DateTimeImmutable $dateTime, float $amountInEuro): float|int;
 
+
 }

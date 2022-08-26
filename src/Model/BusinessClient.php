@@ -6,7 +6,6 @@ class BusinessClient extends BaseClient
 {
    // private array $withdrawsPerWeek;
 
-
     /**
      *  base class deposit percent can be overriden
      */

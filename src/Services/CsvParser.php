@@ -48,6 +48,7 @@ class CsvParser
         $parsedRecord['amount'] = $temp[4];
         $parsedRecord['currency'] = $temp[5];
 
+
         //var_dump($parsedRecord);
         return $parsedRecord;
     }

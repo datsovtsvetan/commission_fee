@@ -42,7 +42,6 @@ class CurrencyConverter
         $conversion_rate  = $this->currencies[$from] / $this->currencies[$to];
 
         return round ($amount / $conversion_rate, 2);
-
     }
 
     public function convertToEuro(float $amount, string $currency):float
