@@ -6,8 +6,6 @@ use App\Interfaces\CurrencyConverterInterface;
 
 abstract class BaseClient
 {
-
-    //const CURRENCY = "EUR";
     const DEPOSIT_PERCENT_TAX = 0.03;
     const AMOUNT = 'amount';
     const COUNT = 'count';
@@ -31,9 +29,9 @@ abstract class BaseClient
 
 
 
-    public function deposit(float $amount): float|int
+    public function getDepositPercent(): float|int
     {
-        return $amount * (self::DEPOSIT_PERCENT_TAX / 100);
+        return (self::DEPOSIT_PERCENT_TAX / 100);
     }
 
     public function withdraw(\DateTimeImmutable $dateTime, float $amount, string $currency, CurrencyConverterInterface $converter):void
@@ -50,25 +48,39 @@ abstract class BaseClient
 
         if (isset($this->withdrawsPerWeek[$key])) {
             $this->withdrawsPerWeek[$key][self::AMOUNT] += $amount;
+            $this->withdrawsPerWeek[$key][self::COUNT] += 1;
 
         } else {
             $this->withdrawsPerWeek[$key][self::AMOUNT] = $amount;
+            $this->withdrawsPerWeek[$key][self::COUNT] = 1;
         }
 
-        $this->withdrawsPerWeek[$key][self::COUNT] += 1;
+
     }
 
     public function getWithdrawnAmountByWeek(\DateTimeImmutable $date):float|int
     {
         $key = $this->getYearAndWeekNumberKey($date);
-        return $this->withdrawsPerWeek[$key][self::AMOUNT];
+        if(isset($this->withdrawsPerWeek[$key])){
+            return $this->withdrawsPerWeek[$key][self::AMOUNT];
+        }
+
+        return 0;
+
     }
 
-    public function getWithdrawnCountByWeek(\DateTimeImmutable $date):float|int
+    public function getWithdrawnCountByWeek(\DateTimeImmutable $date):int
     {
         $key = $this->getYearAndWeekNumberKey($date);
-        return $this->withdrawsPerWeek[$key][self::COUNT];
+        if(isset($this->withdrawsPerWeek[$key])) {
+            return $this->withdrawsPerWeek[$key][self::COUNT];
+        }
+
+        return 0;
     }
+
+    abstract function getWithdrawPercent():float;
+
 
     /**
      * DELETE, TEST PURPOSE ONLY!

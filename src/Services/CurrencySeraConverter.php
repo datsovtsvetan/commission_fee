@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Interfaces\CurrencyConverterInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;

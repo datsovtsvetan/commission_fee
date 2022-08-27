@@ -2,9 +2,10 @@
 
 namespace App\Command;
 
+use App\Interfaces\CommissionFeeCalculatorInterface;
+use App\Interfaces\CurrencyConverterInterface;
 use App\Services\ClientFactory;
 use App\Services\CsvParser;
-use App\Services\CurrencyConverter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,15 +24,19 @@ class CommissionFeeCalculatorCommand extends Command
 {
 
     private CsvParser $csvParser;
-    private CurrencyConverter $currencyConverter;
+    private CurrencyConverterInterface $currencyConverter;
     private ClientFactory $clientFactory;
+    private CommissionFeeCalculatorInterface $commissionFeeCalculator;
 
-    public function __construct(CsvParser $csvParser, CurrencyConverter $currencyConverter, ClientFactory $clientFactory)
+    public function __construct(CsvParser $csvParser, CurrencyConverterInterface $currencyConverter, ClientFactory $clientFactory, CommissionFeeCalculatorInterface $commissionFeeCalculator)
     {
-        $this->currencyConverter = $currencyConverter;
+
         $this->csvParser = $csvParser;
+        $this->currencyConverter = $currencyConverter;
         $this->clientFactory = $clientFactory;
+        $this->commissionFeeCalculator = $commissionFeeCalculator;
         parent::__construct();
+
 
     }
 
@@ -58,6 +63,22 @@ class CommissionFeeCalculatorCommand extends Command
 
         foreach ($csvArray as $record){
             $this->clientFactory->createClientIfNotExist($record['clientId'], $record['clientType']);
+        }
+
+        foreach ($csvArray as $operation){
+            $client = $this->clientFactory->findById($operation['clientId']);
+            $tax = 0.0;
+
+            if($operation['clientType'] == 'private' && $operation['operationType'] == 'withdraw'){
+                $tax = $this->commissionFeeCalculator->calculateWithdrawCommissionFeePrivateClient($client, $operation['date'], $operation['amount'], $operation['currency']);
+            }
+            if($operation['clientType'] == 'business' && $operation['operationType'] == 'withdraw'){
+                $tax = $this->commissionFeeCalculator->calculateWithdrawCommissionFeeBusinessClient($client, $operation['date'], $operation['amount'], $operation['currency']);
+            }
+            if($operation['operationType'] == 'deposit'){
+                $tax = $this->commissionFeeCalculator->calculateDepositCommissionFee($client, $operation['amount']);
+            }
+            $output->writeln($tax);
         }
 
 //        $testAmountInEuro = $this->currencyConverter->convertToEuro(3.92, "BGN");

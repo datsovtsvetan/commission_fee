@@ -14,6 +14,11 @@ class PrivateClient extends BaseClient
         parent::__construct($id);
     }
 
+    function getWithdrawPercent(): float
+    {
+        return (self::WITHDRAW_PERCENT_TAX / 100);
+    }
+
 //    public function calculateWithdrawCommissionFee(\DateTimeImmutable $dateTime, float $amountInEuro):float|int
 //    {
 //        // TODO: Implement withdraw() method.

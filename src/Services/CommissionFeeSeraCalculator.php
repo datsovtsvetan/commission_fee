@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Interfaces\CurrencyConverterInterface;
 use App\Interfaces\CommissionFeeCalculatorInterface;
+use App\Model\BaseClient;
 use App\Model\BusinessClient;
 use App\Model\PrivateClient;
 
@@ -37,32 +38,48 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
 
         $client->withdraw($date, $amount, $currency, $this->converter);
 
-        if($client->getWithdrawnAmountByWeek($date) <= $client::FREE_LIMIT_WITHDRAW_AMOUNT
+        if($client->getWithdrawnAmountByWeek($date) < $client::FREE_LIMIT_WITHDRAW_AMOUNT
             && $client->getWithdrawnCountByWeek($date) <= $client::FREE_LIMIT_COUNT){
             return 0.0;
         }
 
-        $withdrawnAmountToDefaultCurrency = $this->converter->convertToDefaultCurrency($amount, $currency);
+        $isOperationInDefaultCurr = ($currency == $client::FREE_LIMIT_CURRENCY);
 
-        if($isUnderFreeLimitAmount){
-           $amountExceedingFreeLimit = $beforeAmount + $withdrawnAmountToDefaultCurrency - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
+        if( ! $isOperationInDefaultCurr) {
+            $amount = $this->converter->convertToDefaultCurrency($amount, $currency);
+            // IN EUR (default)
+            if($isUnderFreeLimitAmount) {
+                $taxedAmount = ($beforeAmount + $amount) - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
+                $taxedAmountToOrgCurrency = $this->converter->convert($taxedAmount, $currency);
 
-           $finalTaxToOriginalCurrency = $this->converter->convert($client::FREE_LIMIT_CURRENCY, $currency);
+                return $taxedAmountToOrgCurrency * $client->getWithdrawPercent();
+            }
 
-           return $finalTaxToOriginalCurrency * ($client::WITHDRAW_PERCENT_TAX / 100);
+            return $amount * $client->getWithdrawPercent();
         }
 
-        return $amount * ($client::WITHDRAW_PERCENT_TAX / 100);
+        if($isUnderFreeLimitAmount) {
+            $taxedAmountToOrgCurrency = ($beforeAmount + $amount) - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
 
+            return $taxedAmountToOrgCurrency * $client->getWithdrawPercent();
+        }
 
-
-        //$commissionFee = ($client->getWithdrawnAmountByWeek($date) )
-
+       return $amount * $client->getWithdrawPercent();
     }
+
 
     public function calculateWithdrawCommissionFeeBusinessClient(BusinessClient $client, \DateTimeImmutable $date, float $amount, string $currency): float|int
     {
-        // TODO: Implement calculateWithdrawCommissionFeeBusinessClient() method.
-        return 999.99;
+        $client->withdraw($date, $amount, $currency, $this->converter);
+
+        return $amount * $client->getWithdrawPercent();
+
     }
+
+    public function calculateDepositCommissionFee(BaseClient $client, string $amount):float
+    {
+        return $amount * $client->getDepositPercent();
+    }
+
+
 }
