@@ -9,9 +9,10 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class CurrencyConverter
+class CurrencySeraConverter implements CurrencyConverterInterface
 {
     const CURRENCIES_URL = 'https://developers.paysera.com/tasks/api/currency-exchange-rates';
+    const CURRENCY_DEFAULT = "EUR";
 
     private array $currencies;
     private HttpClientInterface $client;
@@ -27,8 +28,8 @@ class CurrencyConverter
      */
     public function convert(float $amount, string $from, string $to = 'EUR'):float
     {
-        $from = strtoupper($from);
-        $to = strtoupper($to);
+        $from = trim(strtoupper($from));
+        $to = trim(strtoupper($to));
         try {
             $this->currencies = $this->fetchCurrenciesFromApi();
         } catch (ClientExceptionInterface |
@@ -44,9 +45,12 @@ class CurrencyConverter
         return round ($amount / $conversion_rate, 2);
     }
 
-    public function convertToEuro(float $amount, string $currency):float
+    /**
+     * this is convenience method
+    */
+    public function convertToDefaultCurrency(float $amount, string $currency):float
     {
-        return $this->convert( $amount, $currency, 'EUR');
+        return $this->convert( $amount, $currency, self::CURRENCY_DEFAULT);
     }
 
     /**

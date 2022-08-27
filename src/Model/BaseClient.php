@@ -2,18 +2,23 @@
 
 namespace App\Model;
 
+use App\Interfaces\CurrencyConverterInterface;
+
 abstract class BaseClient
 {
 
-    const DEPOSIT_PERCENT = 0.03;
+    //const CURRENCY = "EUR";
+    const DEPOSIT_PERCENT_TAX = 0.03;
+    const AMOUNT = 'amount';
+    const COUNT = 'count';
 
     private int $id;
-    protected array $withdrawsHistoryPerWeek;
+    protected array $withdrawsPerWeek;
 
     public function __construct(int $id)
     {
         $this->id = $id;
-        $this->withdrawsHistoryPerWeek = [];
+        $this->withdrawsPerWeek = [];
     }
 
     /**
@@ -26,28 +31,59 @@ abstract class BaseClient
 
 
 
-    protected function deposit(float $amount, string $currency): float|int
+    public function deposit(float $amount): float|int
     {
-        $commissionFee = ($amount * self::DEPOSIT_PERCENT) / 100;
-
-        return 999.99;
+        return $amount * (self::DEPOSIT_PERCENT_TAX / 100);
     }
 
-    protected function withdraw(\DateTimeImmutable $dateTime, float $amountInEuro):void
+    public function withdraw(\DateTimeImmutable $dateTime, float $amount, string $currency, CurrencyConverterInterface $converter):void
     {
-        if(isset($this->withdrawsHistoryPerWeek[$dateTime->format('Y')][$dateTime->format('W')])){
-            $this->withdrawsHistoryPerWeek[$dateTime->format('Y')][$dateTime->format('W')] += $amountInEuro;
+//        if(isset($this->withdrawsHistoryPerWeek[$dateTime->format('Y')][$dateTime->format('W')])){
+//            $this->withdrawsHistoryPerWeek[$dateTime->format('Y')][$dateTime->format('W')] += $amountInEuro;
+//        } else {
+//            $this->withdrawsHistoryPerWeek[$dateTime->format('Y')][$dateTime->format('W')] = $amountInEuro;
+//        }
+
+        $amount = $converter->convertToDefaultCurrency($amount, $currency);
+
+        $key = $this->getYearAndWeekNumberKey($dateTime);
+
+        if (isset($this->withdrawsPerWeek[$key])) {
+            $this->withdrawsPerWeek[$key][self::AMOUNT] += $amount;
+
         } else {
-            $this->withdrawsHistoryPerWeek[$dateTime->format('Y')][$dateTime->format('W')] = $amountInEuro;
+            $this->withdrawsPerWeek[$key][self::AMOUNT] = $amount;
         }
+
+        $this->withdrawsPerWeek[$key][self::COUNT] += 1;
     }
 
+    public function getWithdrawnAmountByWeek(\DateTimeImmutable $date):float|int
+    {
+        $key = $this->getYearAndWeekNumberKey($date);
+        return $this->withdrawsPerWeek[$key][self::AMOUNT];
+    }
+
+    public function getWithdrawnCountByWeek(\DateTimeImmutable $date):float|int
+    {
+        $key = $this->getYearAndWeekNumberKey($date);
+        return $this->withdrawsPerWeek[$key][self::COUNT];
+    }
+
+    /**
+     * DELETE, TEST PURPOSE ONLY!
+     */
     public function testOnlyGetHistoryWithdraws(): array
     {
-        return $this->withdrawsHistoryPerWeek;
+        return $this->withdrawsPerWeek;
     }
 
-    abstract function calculateWithdrawCommissionFee(\DateTimeImmutable $dateTime, float $amountInEuro): float|int;
+    private function getYearAndWeekNumberKey(\DateTimeImmutable $dateTime):string
+    {
+        return "year:".$dateTime->format('Y')."week:".$dateTime->format('W');
+    }
+
+    //abstract function calculateWithdrawCommissionFee(\DateTimeImmutable $dateTime, float $amountInEuro): float|int;
 
 
 }

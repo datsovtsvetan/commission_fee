@@ -15,7 +15,9 @@ use Symfony\Component\Finder\Finder;
 
 #[AsCommand(
     name: 'app:commission_fee_calculator',
-    description: 'Add a short description for your command',
+    description: 'This command parse csv file with operations like
+    deposit or withdraw and calculates commission fee as output based
+    on certain  rules',
 )]
 class CommissionFeeCalculatorCommand extends Command
 {
@@ -35,7 +37,7 @@ class CommissionFeeCalculatorCommand extends Command
 
     protected function configure(): void
     {
-        $this->setDescription("Import csv file with fiscal operations like deposit or withdraw to calculate commission fee from each one")
+        $this->setDescription("Import csv file with operations like deposit or withdraw to calculate commission fee for each one")
             ->addArgument('csvPath', InputArgument::REQUIRED, 'the path to csv file to import')
             ->addArgument('fileName', InputArgument::REQUIRED, 'the name to csv file to import, without the path to it')
 
@@ -58,13 +60,13 @@ class CommissionFeeCalculatorCommand extends Command
             $this->clientFactory->createClientIfNotExist($record['clientId'], $record['clientType']);
         }
 
-        $testAmountInEuro = $this->currencyConverter->convertToEuro(3.92, "BGN");
-        $testClient = $this->clientFactory->findById($csvArray[0]['clientId']);
-
-        $testClient->calculateWithdrawCommissionFee(new \DateTimeImmutable('2015-01-04'), $testAmountInEuro);
-
-        var_dump($testClient->testOnlyGetHistoryWithdraws());
-        die();
+//        $testAmountInEuro = $this->currencyConverter->convertToEuro(3.92, "BGN");
+//        $testClient = $this->clientFactory->findById($csvArray[0]['clientId']);
+//
+//        $testClient->calculateWithdrawCommissionFee(new \DateTimeImmutable('2015-01-04'), $testAmountInEuro);
+//
+//        var_dump($testClient->testOnlyGetHistoryWithdraws());
+//        die();
 
 
 //        var_dump($this->clientFactory->getClients());

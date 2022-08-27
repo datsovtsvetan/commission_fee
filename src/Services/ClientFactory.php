@@ -2,20 +2,17 @@
 
 namespace App\Services;
 
-use App\Model\BaseClient;
 use App\Model\BusinessClient;
 use App\Model\PrivateClient;
 
 class ClientFactory
 {
     private array $clients;
-    private array $withdrows;
+
 
     public function __construct()
     {
         $this->clients = [];
-        $this->withdrows = [];
-
     }
 
     public function createClientIfNotExist(int $id, string $type):void
@@ -47,7 +44,7 @@ class ClientFactory
         return $this->clients;
     }
 
-    public function findById(int $id):?BaseClient
+    public function findById(int $id): PrivateClient|BusinessClient|null
     {
         foreach ($this->clients as $client){
             if($client->getId() == $id){
