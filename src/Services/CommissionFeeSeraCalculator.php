@@ -27,43 +27,41 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
 
     public function calculateWithdrawCommissionFeePrivateClient(PrivateClient $client, \DateTimeImmutable $date, float $amount, string $currency): float|int
     {
-        $beforeAmount = $client->getWithdrawnAmountByWeek($date);
-        $isUnderFreeLimitAmount = $beforeAmount < $client::FREE_LIMIT_WITHDRAW_AMOUNT;
+        $prevAmount = $client->getWithdrawnAmountByWeek($date);
+        $isUnderFreeLimitAmount = $prevAmount < $client::FREE_LIMIT_WITHDRAW_AMOUNT;
 
-        $client->withdraw($date, $amount, $currency, $this->converter);
+        $isConversionNeeded = ($currency != $client::ACCOUNT_CURRENCY);
+
+        $this->doWithdraw($client, $date, $amount, $currency, $isConversionNeeded);
 
         if($client->getWithdrawnAmountByWeek($date) <= $client::FREE_LIMIT_WITHDRAW_AMOUNT
             && $client->getWithdrawnCountByWeek($date) <= $client::FREE_LIMIT_COUNT){
             return 0.0;
         }
 
-        $isOperationInDefaultCurr = ($currency == $client::FREE_LIMIT_CURRENCY);
+        if($isConversionNeeded) {
+            $amount = $this->converter->convert($amount, $currency, $client::ACCOUNT_CURRENCY);
 
-        if( ! $isOperationInDefaultCurr) {
-            $amount = $this->converter->convertToDefaultCurrency($amount, $currency);
-            // IN EUR (default)
+            var_dump($amount, 'line: '.__LINE__);
             if($isUnderFreeLimitAmount) {
-                $taxedAmount = ($beforeAmount + $amount) - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
-                $taxedAmountToOrgCurrency = $this->converter->convert($taxedAmount, $currency);
-
-                $resultUnrounded = $taxedAmountToOrgCurrency * $client->getWithdrawPercent();
-
-                return $this->roundUp($resultUnrounded);
+                var_dump($amount, 'line: '.__LINE__);
+                return $this->calculateDiff($client, $prevAmount, $amount, $currency, true );
             }
 
-            $resultUnrounded = $amount * $client->getWithdrawPercent();
+            $fullAmountInOrgCurrency = $this->converter
+                ->convert($amount, $client::ACCOUNT_CURRENCY, $currency);
+            $resultUnrounded = $fullAmountInOrgCurrency
+                * $client->getWithdrawPercent();
 
             return $this->roundUp($resultUnrounded);
         }
 
         if($isUnderFreeLimitAmount) {
-            $taxedAmountToOrgCurrency = ($beforeAmount + $amount) - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
+            return $this->calculateDiff($client, $prevAmount, $amount, $currency, false );
+            var_dump(__LINE__);
 
-            $resultUnrounded = $taxedAmountToOrgCurrency * $client->getWithdrawPercent();
-
-            return $this->roundUp($resultUnrounded);
         }
-
+        var_dump(__LINE__);
         $resultUnrounded = $amount * $client->getWithdrawPercent();
 
         return $this->roundUp($resultUnrounded);
@@ -72,7 +70,7 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
 
     public function calculateWithdrawCommissionFeeBusinessClient(BusinessClient $client, \DateTimeImmutable $date, float $amount, string $currency): float|int
     {
-        $client->withdraw($date, $amount, $currency, $this->converter);
+        $client->withdraw($date, $amount);
 
         $resultUnrounded = $amount * $client->getWithdrawPercent();
 
@@ -87,5 +85,40 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
         return $this->roundUp($resultUnrounded);
     }
 
+    private function calculateDiff($client, $prevAmount, $amount, $currency, $isConversionNeeded):float
+    {
+        if($isConversionNeeded) {
+            $convertedFullAmount = $this->converter->convert($amount, $currency, $client::ACCOUNT_CURRENCY);
+            $taxedAmount = ($prevAmount + $convertedFullAmount)
+                - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
 
+            $taxedAmountToOrgCurrency = $this->converter
+                ->convert($taxedAmount, $client::ACCOUNT_CURRENCY, $currency);
+            //var_dump($taxedAmountToOrgCurrency);
+            $resultUnrounded = $taxedAmountToOrgCurrency
+                * $client->getWithdrawPercent();
+
+            var_dump(__LINE__);
+            return $this->roundUp($resultUnrounded);
+        }
+
+        $taxedAmount = ($prevAmount + $amount)
+        - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
+        var_dump(__LINE__);
+        $resultUnrounded = $taxedAmount * $client->getWithdrawPercent();
+
+        return $this->roundUp($resultUnrounded);
+    }
+
+    private function doWithdraw($client, $date, $amount, $currency, $isConversionNeeded):void
+    {
+        if($isConversionNeeded){
+            $client->withdraw($date, $this->converter->convert($amount,
+                $currency,
+                $client::ACCOUNT_CURRENCY)
+            );
+        }
+
+        $client->withdraw($date, $amount);
+    }
 }

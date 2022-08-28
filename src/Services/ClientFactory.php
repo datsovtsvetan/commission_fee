@@ -36,13 +36,13 @@ class ClientFactory
 
     }
 
-    /**
-     * @return array
-     */
-    public function getClients(): array
-    {
-        return $this->clients;
-    }
+//    /**
+//     * @return array
+//     */
+//    public function getClients(): array
+//    {
+//        return $this->clients;
+//    }
 
     public function findById(int $id): PrivateClient|BusinessClient|null
     {
@@ -53,11 +53,4 @@ class ClientFactory
         }
         return null;
     }
-
-//    public function addWithdraw(int $clientId, float $amount, string $currency):void
-//    {
-//        $client = $this->findById($clientId);
-//    }
-
-
 }

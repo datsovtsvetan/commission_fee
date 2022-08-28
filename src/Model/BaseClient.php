@@ -25,12 +25,8 @@ abstract class BaseClient
         return $this->id;
     }
 
-    public function withdraw(\DateTimeImmutable $dateTime, float $amount, string $currency, CurrencyConverterInterface $converter):void
+    public function withdraw(\DateTimeImmutable $dateTime, float $amount):void
     {
-        if ($currency != self::ACCOUNT_CURRENCY){
-            $amount = $converter->convertToDefaultCurrency($amount, $currency);
-        }
-
         $key = $this->getWeekKey($dateTime);
 
         if (isset($this->withdrawsPerWeek[$key][self::AMOUNT])
@@ -68,16 +64,6 @@ abstract class BaseClient
     public function getDepositPercent(): float|int
     {
         return (self::DEPOSIT_PERCENT_TAX / 100);
-    }
-
-    abstract function getWithdrawPercent():float;
-
-    /**
-     * DELETE, TEST PURPOSE ONLY!
-     */
-    public function testOnlyGetHistoryWithdraws(): array
-    {
-        return $this->withdrawsPerWeek;
     }
 
     private function getWeekKey(\DateTimeImmutable $date):string
@@ -130,7 +116,8 @@ abstract class BaseClient
             }
         }
 
-        //var_dump("year:".$date->format('Y')."week:".$date->format('W'));
         return "year:".$date->format('Y')."week:".$date->format('W');
     }
+
+    abstract function getWithdrawPercent():float;
 }
