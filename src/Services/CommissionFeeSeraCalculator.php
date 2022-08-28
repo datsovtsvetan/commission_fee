@@ -17,6 +17,9 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
         $this->converter = $converter;
     }
 
+    /**
+     * this method rounds always up, i.e. 0.21 becomes 0.3
+     */
     private function roundUp(float $value, int $precision = 2): float
     {
         $pow = \pow(10, $precision);
@@ -89,6 +92,10 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
         return $this->roundUp($resultUnrounded);
     }
 
+    /**
+     * This method calculates the diff betweeen the current withdraw and the
+     * free limit (used only if currently below the limit!) and calculates the commission fee only on the exceeded amount.
+     */
     private function calculateDiff($client, $prevAmount, $amount, $currency, $isConversionNeeded):float
     {
         if($isConversionNeeded) {
@@ -119,7 +126,7 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
                 $this->converter->convert($amount,
                     $currency,
                     $client::ACCOUNT_CURRENCY));
-        } else{
+        } else {
             $client->withdraw($date, $amount);
         }
     }
