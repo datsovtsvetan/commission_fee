@@ -29,9 +29,7 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
     {
         $prevAmount = $client->getWithdrawnAmountByWeek($date);
         $isUnderFreeLimitAmount = $prevAmount < $client::FREE_LIMIT_WITHDRAW_AMOUNT;
-
         $isConversionNeeded = ($currency != $client::ACCOUNT_CURRENCY);
-
         $this->doWithdraw($client, $date, $amount, $currency, $isConversionNeeded);
 
         if($client->getWithdrawnAmountByWeek($date) <= $client::FREE_LIMIT_WITHDRAW_AMOUNT
@@ -40,11 +38,8 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
         }
 
         if($isConversionNeeded) {
-            $amount = $this->converter->convert($amount, $currency, $client::ACCOUNT_CURRENCY);
 
-            var_dump($amount, 'line: '.__LINE__);
             if($isUnderFreeLimitAmount) {
-                var_dump($amount, 'line: '.__LINE__);
                 return $this->calculateDiff($client, $prevAmount, $amount, $currency, true );
             }
 
@@ -58,12 +53,9 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
 
         if($isUnderFreeLimitAmount) {
             return $this->calculateDiff($client, $prevAmount, $amount, $currency, false );
-            var_dump(__LINE__);
-
         }
-        var_dump(__LINE__);
-        $resultUnrounded = $amount * $client->getWithdrawPercent();
 
+        $resultUnrounded = $amount * $client->getWithdrawPercent();
         return $this->roundUp($resultUnrounded);
     }
 
@@ -71,11 +63,9 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
     public function calculateWithdrawCommissionFeeBusinessClient(BusinessClient $client, \DateTimeImmutable $date, float $amount, string $currency): float|int
     {
         $client->withdraw($date, $amount);
-
         $resultUnrounded = $amount * $client->getWithdrawPercent();
 
         return $this->roundUp($resultUnrounded);
-
     }
 
     public function calculateDepositCommissionFee(BaseClient $client, string $amount):float
@@ -94,17 +84,15 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
 
             $taxedAmountToOrgCurrency = $this->converter
                 ->convert($taxedAmount, $client::ACCOUNT_CURRENCY, $currency);
-            //var_dump($taxedAmountToOrgCurrency);
             $resultUnrounded = $taxedAmountToOrgCurrency
                 * $client->getWithdrawPercent();
 
-            var_dump(__LINE__);
             return $this->roundUp($resultUnrounded);
         }
 
         $taxedAmount = ($prevAmount + $amount)
         - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
-        var_dump(__LINE__);
+
         $resultUnrounded = $taxedAmount * $client->getWithdrawPercent();
 
         return $this->roundUp($resultUnrounded);
@@ -117,8 +105,8 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
                 $currency,
                 $client::ACCOUNT_CURRENCY)
             );
+        } else{
+            $client->withdraw($date, $amount);
         }
-
-        $client->withdraw($date, $amount);
     }
 }
