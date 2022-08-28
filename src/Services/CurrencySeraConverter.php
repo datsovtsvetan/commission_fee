@@ -13,7 +13,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class CurrencySeraConverter implements CurrencyConverterInterface
 {
     const CURRENCIES_URL = 'https://developers.paysera.com/tasks/api/currency-exchange-rates';
-    //const CURRENCY_DEFAULT = "EUR";
 
     private array $currencies;
     private HttpClientInterface $client;
@@ -46,14 +45,6 @@ class CurrencySeraConverter implements CurrencyConverterInterface
 
         return round ($amount / $conversion_rate, 2);
     }
-
-//    /**
-//     * this is convenience method
-//    */
-//    public function convertToDefaultCurrency(float $amount, string $from):float
-//    {
-//        return $this->convert( $amount, $from, self::CURRENCY_DEFAULT);
-//    }
 
     /**
      * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface

@@ -8,9 +8,6 @@ class CsvParser
 {
     public function parseCsv($csvPath, $fileName): array
     {
-       // $csvPath = $input->getArgument('csvPath');
-        //$fileName = $input->getArgument('fileName');
-
         $finder = new Finder();
         $finder->files()
             ->in($csvPath)
@@ -37,19 +34,15 @@ class CsvParser
      */
     private function parseRecordToArray($record): array
     {
-//        var_dump($record);
-//        die();
         $parsedRecord = [];
-        $temp = explode(',', $record);
-        $parsedRecord['date'] = new \DateTimeImmutable($temp[0]);
-        $parsedRecord['clientId'] = $temp[1];
-        $parsedRecord['clientType'] = $temp[2];
-        $parsedRecord['operationType'] = $temp[3];
-        $parsedRecord['amount'] = $temp[4];
-        $parsedRecord['currency'] = $temp[5];
+        $toArray = explode(',', $record);
+        $parsedRecord['date'] = new \DateTimeImmutable($toArray[0]);
+        $parsedRecord['clientId'] = $toArray[1];
+        $parsedRecord['clientType'] = $toArray[2];
+        $parsedRecord['operationType'] = $toArray[3];
+        $parsedRecord['amount'] = $toArray[4];
+        $parsedRecord['currency'] = $toArray[5];
 
-
-        //var_dump($parsedRecord);
         return $parsedRecord;
     }
 }

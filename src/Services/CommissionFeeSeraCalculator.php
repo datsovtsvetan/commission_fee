@@ -21,26 +21,38 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
     private function roundUp(float $value, int $precision = 2): float
     {
         $pow = \pow(10, $precision);
-        return (\ceil($pow * $value) + \ceil($pow * $value - \ceil($pow * $value))) / $pow;
+        return (\ceil($pow * $value)
+                + \ceil($pow * $value - \ceil($pow * $value))) / $pow;
     }
 
 
     public function calculateWithdrawCommissionFeePrivateClient(PrivateClient $client, \DateTimeImmutable $date, float $amount, string $currency): float|int
     {
         $prevAmount = $client->getWithdrawnAmountByWeek($date);
-        $isUnderFreeLimitAmount = $prevAmount < $client::FREE_LIMIT_WITHDRAW_AMOUNT;
+        $isUnderFreeLimitAmount = $prevAmount
+            < $client::FREE_LIMIT_WITHDRAW_AMOUNT;
         $isConversionNeeded = ($currency != $client::ACCOUNT_CURRENCY);
-        $this->doWithdraw($client, $date, $amount, $currency, $isConversionNeeded);
+        $this->doWithdraw($client,
+            $date,
+            $amount,
+            $currency,
+            $isConversionNeeded);
 
-        if($client->getWithdrawnAmountByWeek($date) <= $client::FREE_LIMIT_WITHDRAW_AMOUNT
-            && $client->getWithdrawnCountByWeek($date) <= $client::FREE_LIMIT_COUNT){
+        if($client->getWithdrawnAmountByWeek($date)
+            <= $client::FREE_LIMIT_WITHDRAW_AMOUNT
+            && $client->getWithdrawnCountByWeek($date)
+            <= $client::FREE_LIMIT_COUNT){
             return 0.0;
         }
 
         if($isConversionNeeded) {
 
             if($isUnderFreeLimitAmount) {
-                return $this->calculateDiff($client, $prevAmount, $amount, $currency, true );
+                return $this->calculateDiff($client,
+                    $prevAmount,
+                    $amount,
+                    $currency,
+                    true );
             }
 
             $fullAmountInOrgCurrency = $this->converter
@@ -52,7 +64,10 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
         }
 
         if($isUnderFreeLimitAmount) {
-            return $this->calculateDiff($client, $prevAmount, $amount, $currency, false );
+            return $this->calculateDiff($client,
+                $prevAmount, $amount,
+                $currency,
+                false );
         }
 
         $resultUnrounded = $amount * $client->getWithdrawPercent();
@@ -101,10 +116,10 @@ class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
     private function doWithdraw($client, $date, $amount, $currency, $isConversionNeeded):void
     {
         if($isConversionNeeded){
-            $client->withdraw($date, $this->converter->convert($amount,
-                $currency,
-                $client::ACCOUNT_CURRENCY)
-            );
+            $client->withdraw($date,
+                $this->converter->convert($amount,
+                    $currency,
+                    $client::ACCOUNT_CURRENCY));
         } else{
             $client->withdraw($date, $amount);
         }

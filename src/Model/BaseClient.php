@@ -2,8 +2,6 @@
 
 namespace App\Model;
 
-use App\Interfaces\CurrencyConverterInterface;
-
 abstract class BaseClient
 {
     const ACCOUNT_CURRENCY = "EUR";
@@ -68,8 +66,7 @@ abstract class BaseClient
 
     private function getWeekKey(\DateTimeImmutable $date):string
     {
-
-        // check if is in the last week of year:
+        // check if is in the last week of year and shares same week with next year:
         $year = $date->format('Y');
         $lastDayOfYear = \DateTimeImmutable::createFromFormat("Y-m-d",
             "$year-12-31");
@@ -91,9 +88,9 @@ abstract class BaseClient
             }
         }
 
-        //End check date is in last week of year
+        //End check date is in last week of year and shares same week with next year
 
-        // Check for first week in year
+        // Check for first week in year and shares same week with last year
         /**
          * to make sure the format is valid (i.e $date->format('W') => 1 or 01)
          * and not brakes if format changes between php versions.
@@ -115,6 +112,7 @@ abstract class BaseClient
                 }
             }
         }
+        //End check date is in first week of year and shares same week with last year
 
         return "year:".$date->format('Y')."week:".$date->format('W');
     }

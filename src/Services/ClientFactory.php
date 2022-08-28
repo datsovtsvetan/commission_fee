@@ -36,14 +36,6 @@ class ClientFactory
 
     }
 
-//    /**
-//     * @return array
-//     */
-//    public function getClients(): array
-//    {
-//        return $this->clients;
-//    }
-
     public function findById(int $id): PrivateClient|BusinessClient|null
     {
         foreach ($this->clients as $client){
@@ -51,6 +43,7 @@ class ClientFactory
                 return $client;
             }
         }
+
         return null;
     }
 }
