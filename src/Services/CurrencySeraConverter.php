@@ -49,9 +49,9 @@ class CurrencySeraConverter implements CurrencyConverterInterface
     /**
      * this is convenience method
     */
-    public function convertToDefaultCurrency(float $amount, string $currency):float
+    public function convertToDefaultCurrency(float $amount, string $from):float
     {
-        return $this->convert( $amount, $currency, self::CURRENCY_DEFAULT);
+        return $this->convert( $amount, $from, self::CURRENCY_DEFAULT);
     }
 
     /**
