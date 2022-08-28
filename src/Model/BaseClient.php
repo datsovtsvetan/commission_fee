@@ -4,13 +4,12 @@ namespace App\Model;
 
 abstract class BaseClient
 {
-    const ACCOUNT_CURRENCY = "EUR";
-    const DEPOSIT_PERCENT_TAX = 0.03;
-    const AMOUNT = 'amount';
-    const COUNT = 'count';
-
-    private int $id;
+    public const ACCOUNT_CURRENCY = "EUR";
     protected array $withdrawsPerWeek;
+    private const DEPOSIT_PERCENT_TAX = 0.03;
+    private const AMOUNT = 'amount';
+    private const COUNT = 'count';
+    private int $id;
 
     public function __construct(int $id)
     {
@@ -117,5 +116,5 @@ abstract class BaseClient
         return "year:".$date->format('Y')."week:".$date->format('W');
     }
 
-    abstract function getWithdrawPercent():float;
+    abstract protected function getWithdrawPercent():float;
 }

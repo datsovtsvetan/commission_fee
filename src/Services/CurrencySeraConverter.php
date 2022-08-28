@@ -12,7 +12,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class CurrencySeraConverter implements CurrencyConverterInterface
 {
-    const CURRENCIES_URL = 'https://developers.paysera.com/tasks/api/currency-exchange-rates';
+    private const CURRENCIES_URL = 'https://developers.paysera.com/tasks/api/currency-exchange-rates';
 
     private array $currencies;
     private HttpClientInterface $client;
@@ -38,7 +38,7 @@ class CurrencySeraConverter implements CurrencyConverterInterface
         RedirectionExceptionInterface |
         ServerExceptionInterface |
         TransportExceptionInterface $e) {
-
+            echo $e->getMessage();
         }
 
         $conversion_rate  = $this->currencies[$from] / $this->currencies[$to];
@@ -58,6 +58,5 @@ class CurrencySeraConverter implements CurrencyConverterInterface
         $response = $this->client->request('GET', self::CURRENCIES_URL);
 
         return $response->toArray(true)['rates'];
-
     }
 }

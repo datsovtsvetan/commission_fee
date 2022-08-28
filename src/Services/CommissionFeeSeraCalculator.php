@@ -10,7 +10,6 @@ use App\Model\PrivateClient;
 
 class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
 {
-
     private CurrencyConverterInterface $converter;
 
     public function __construct(CurrencyConverterInterface $converter)
