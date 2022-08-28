@@ -103,7 +103,6 @@ abstract class BaseClient
                     return $year."-".$nextYear;
                 }
             }
-
         }
 
         //End check date is in last week of year
