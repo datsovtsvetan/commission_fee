@@ -147,7 +147,6 @@ class CommissionFeeTest extends KernelTestCase
 
         $output = $commandTester->getDisplay();
 
-        $this->assertStringContainsString("0.6\r\n3\r\n0\r\n0.06\r\n1.5\r\n0\r\n0.69\r\n0.34\r\n0.3\r\n3\r\n0\r\n0\r\n8607.4\r\n", $output);
-
+        $this->assertSame("0.6\r\n3\r\n0\r\n0.06\r\n1.5\r\n0\r\n0.69\r\n0.34\r\n0.3\r\n3\r\n0\r\n0\r\n8607.4\r\n", $output);
     }
 }
