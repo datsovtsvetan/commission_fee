@@ -44,8 +44,8 @@ class CommissionFeeCalculatorCommand extends Command
         $csvPath = $input->getArgument('csvPath');
         $fileName = $input->getArgument('fileName');
         $csvArray = $this->csvParser->parseCsv($csvPath, $fileName);
-        var_dump($csvArray);
-        die;
+//        var_dump($csvArray);
+//        die;
 
         foreach ($csvArray as $record){
             $this->clientFactory->createClientIfNotExist($record['clientId'], $record['clientType']);

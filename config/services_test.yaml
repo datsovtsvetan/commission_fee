@@ -1,3 +1,11 @@
-services:
-    App\Services\CsvParser:
-        public: true
+#services:
+#    App\Services\CommissionFeeSeraCalculator:
+#        public: true
+#    App\Services\ClientFactory:
+#        public: true
+#    App\Services\CurrencySeraConverter:
+#        public: true
+#    App\Services\CsvParser:
+#        public: true
+framework:
+    test: ~

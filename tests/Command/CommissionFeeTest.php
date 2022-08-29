@@ -2,6 +2,9 @@
 
 namespace App\Tests\Command;
 
+use App\Interfaces\CommissionFeeCalculatorInterface;
+use App\Services\ClientFactory;
+use App\Services\CommissionFeeSeraCalculator;
 use App\Services\CsvParser;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -16,21 +19,16 @@ class CommissionFeeTest extends KernelTestCase
     {
         $kernel = self::bootKernel();
 
-        $mockScvParser = $this->createMock(CsvParser::class);
+        //$mockScvParser = $this->createMock(CsvParser::class);
+        $calculator = $this->getMockBuilder(CommissionFeeSeraCalculator::class)->disableOriginalConstructor()->getMock();
+        $clientFactory = $this->getMockBuilder(ClientFactory::class)->disableOriginalConstructor()->getMock();
+        $mockScvParser = $this->getMockBuilder(CsvParser::class)->disableOriginalConstructor()->getMock();
 
-        //$mockScvParser = $this->getMockBuilder(CsvParser::class)->disableOriginalConstructor()->getMock();
         $this->csvParser = $mockScvParser;
-        static::$kernel->getContainer()->set(CsvParser::class, $mockScvParser);
-        $mockScvParser->expects($this->once())->method('parseCsv')->willReturn(  [
-            [
-            "date"=> "2016-02-19 00:00:00.000000",
-            "clientId"=> "5",
-            "clientType"=> "private",
-            "operationType"=> "withdraw",
-            "amount"=> "3000000",
-            "currency"=> "JPY"]
-            ]
-        );
+        $kernel->getContainer()->set(CsvParser::class, $this->csvParser);
+        $kernel->getContainer()->set(CommissionFeeSeraCalculator::class, $calculator);
+        $kernel->getContainer()->set(ClientFactory::class, $clientFactory);
+
 
         //$kernel->getContainer()->set(CsvParser::class, $mockScvParser);
         parent::setUp();
@@ -42,6 +40,17 @@ class CommissionFeeTest extends KernelTestCase
         //$this->assertTrue(true);
 
         //$mockScvParser = $this->createMock(CsvParser::class);
+//        $this->csvParser->expects($this->once())->method('parseCsv')->willReturn(  [
+//                [
+//                    "date"=> "2016-02-19 00:00:00.000000",
+//                    "clientId"=> "5",
+//                    "clientType"=> "private",
+//                    "operationType"=> "withdraw",
+//                    "amount"=> "3000000",
+//                    "currency"=> "JPY"]
+//            ]
+//        );
+        $this->csvParser->expects($this->once())->method('parseCsv')->willReturn('bla');
 
         $kernel = self::bootKernel();
 
@@ -52,9 +61,6 @@ class CommissionFeeTest extends KernelTestCase
 
         $commandTester = new CommandTester($command);
 
-        //$commandTester->setInputs()
-//        $bla = $commandTester->getInput();
-//        var_dump($bla);
         $commandTester->execute([
             // pass arguments to the helper
             'csvPath' => 'C:\Users\datso\commission_fee\public\\',
@@ -68,7 +74,7 @@ class CommissionFeeTest extends KernelTestCase
 
         // the output of the command in the console
         $output = $commandTester->getDisplay();
-        //var_dump($output);
+
         $this->assertStringContainsString('Username: Wouter', $output);
 
         // ...
