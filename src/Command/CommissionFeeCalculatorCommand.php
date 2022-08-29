@@ -62,8 +62,7 @@ class CommissionFeeCalculatorCommand extends Command
             if($operation['operationType'] == 'deposit'){
                 $tax = $this->taxSeraCalculator->calculateDepositCommissionFee($client, $operation['amount']);
             }
-            //$output->writeln($tax);
-            $output->write($tax.'/');
+            $output->writeln($tax);
         }
 
         return Command::SUCCESS;
