@@ -20,7 +20,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class CommissionFeeCalculatorCommand extends Command
 {
-
     private CsvParser $csvParser;
     private ClientFactory $clientFactory;
     private CommissionFeeCalculatorInterface $taxSeraCalculator;
@@ -45,6 +44,8 @@ class CommissionFeeCalculatorCommand extends Command
         $csvPath = $input->getArgument('csvPath');
         $fileName = $input->getArgument('fileName');
         $csvArray = $this->csvParser->parseCsv($csvPath, $fileName);
+        var_dump($csvArray);
+        die;
 
         foreach ($csvArray as $record){
             $this->clientFactory->createClientIfNotExist($record['clientId'], $record['clientType']);

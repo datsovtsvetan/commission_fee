@@ -6,14 +6,21 @@ use Symfony\Component\Finder\Finder;
 
 class CsvParser
 {
+    private Finder $finder;
+
+    public function __construct(Finder $finder)
+    {
+        $this->finder = $finder;
+    }
+
     public function parseCsv($csvPath, $fileName): array
     {
-        $finder = new Finder();
-        $finder->files()
+        //$finder = new Finder();
+        $this->finder->files()
             ->in($csvPath)
             ->name($fileName);
 
-        foreach ($finder as $file)
+        foreach ($this->finder as $file)
         {
             $csv = $file;
         }
