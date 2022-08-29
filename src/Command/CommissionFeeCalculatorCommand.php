@@ -44,8 +44,6 @@ class CommissionFeeCalculatorCommand extends Command
         $csvPath = $input->getArgument('csvPath');
         $fileName = $input->getArgument('fileName');
         $csvArray = $this->csvParser->parseCsv($csvPath, $fileName);
-//        var_dump($csvArray);
-//        die;
 
         foreach ($csvArray as $record){
             $this->clientFactory->createClientIfNotExist($record['clientId'], $record['clientType']);
@@ -64,7 +62,8 @@ class CommissionFeeCalculatorCommand extends Command
             if($operation['operationType'] == 'deposit'){
                 $tax = $this->taxSeraCalculator->calculateDepositCommissionFee($client, $operation['amount']);
             }
-            $output->writeln($tax);
+            //$output->writeln($tax);
+            $output->write($tax.'/');
         }
 
         return Command::SUCCESS;

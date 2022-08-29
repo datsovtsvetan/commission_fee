@@ -15,6 +15,7 @@ class CsvParser
 
     public function parseCsv($csvPath, $fileName): array
     {
+        //var_dump("in real parseCsv() method");
         //$finder = new Finder();
         $this->finder->files()
             ->in($csvPath)
