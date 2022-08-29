@@ -2,9 +2,6 @@
 
 namespace App\Tests\Command;
 
-use App\Interfaces\CommissionFeeCalculatorInterface;
-use App\Services\ClientFactory;
-use App\Services\CommissionFeeSeraCalculator;
 use App\Services\CsvParser;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;

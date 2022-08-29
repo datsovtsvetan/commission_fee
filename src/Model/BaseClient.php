@@ -63,9 +63,15 @@ abstract class BaseClient
         return (self::DEPOSIT_PERCENT_TAX / 100);
     }
 
+    /**
+     * This key is used as identifier of the week that the withdraw is performed
+     * Weeks that share days from different adjacent years are also considered and in format like '2021-2022'
+     * All other weeks within same year are in format like 'year:2022week:34'
+     */
     private function getWeekKey(\DateTimeImmutable $date):string
     {
-        // check if is in the last week of year and shares same week with next year:
+        // Check if date is in the last week of year and shares
+        // same week with next year several days:
         $year = $date->format('Y');
         $lastDayOfYear = \DateTimeImmutable::createFromFormat("Y-m-d",
             "$year-12-31");
@@ -87,9 +93,11 @@ abstract class BaseClient
             }
         }
 
-        //End check date is in last week of year and shares same week with next year
+        // END check date is in last week of the year...
 
-        // Check for first week in year and shares same week with last year
+        // Check if the date is in first week in the year
+        // and shares same week with last year several days:
+
         /**
          * to make sure the format is valid (i.e $date->format('W') => 1 or 01)
          * and not brakes if format changes between php versions.
@@ -111,7 +119,8 @@ abstract class BaseClient
                 }
             }
         }
-        //End check date is in first week of year and shares same week with last year
+        // END check date is in first week of year and shares
+        // same week with last year several days
 
         return "year:".$date->format('Y')."week:".$date->format('W');
     }

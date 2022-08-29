@@ -16,6 +16,8 @@ this is symfony 5.4 project that has one command that takes two input parameters
 2016-02-15,1,private,withdraw,300.00,EUR
 2016-02-19,5,private,withdraw,3000000,JPY
 
+Requirements:
+    composer, php 8
 
 Instructions for use:
 

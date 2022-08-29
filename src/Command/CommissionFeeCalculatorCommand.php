@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Interfaces\CommissionFeeCalculatorInterface;
-use App\Interfaces\CurrencyConverterInterface;
 use App\Services\ClientFactory;
 use App\Services\CsvParser;
 use Symfony\Component\Console\Attribute\AsCommand;
