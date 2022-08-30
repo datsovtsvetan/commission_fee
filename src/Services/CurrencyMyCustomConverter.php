@@ -13,7 +13,6 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class CurrencyMyCustomConverter implements CurrencyConverterInterface
 {
     private const CURRENCIES_URL = 'https://developers.paysera.com/tasks/api/currency-exchange-rates';
-
     private array $currencies;
     private HttpClientInterface $client;
 

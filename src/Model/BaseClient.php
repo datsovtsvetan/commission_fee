@@ -84,10 +84,8 @@ abstract class BaseClient
             for ($i=0;$i<7;$i++){
                 $nextDateWeekNumber = $date->add(new \DateInterval('P'.$i.'D'))
                     ->format('W');
-
                 if($nextDateWeekNumber != $weekNumber){
                     $nextYear = (int) $year + 1;
-                    //var_dump($year."-".$nextYear);
                     return $year."-".$nextYear;
                 }
             }
@@ -111,10 +109,8 @@ abstract class BaseClient
             for ($i=0;$i<7;$i++){
                 $prevDateWeekNumber = $date->sub(new \DateInterval('P'.$i.'D'))
                     ->format('W');
-
                 if($prevDateWeekNumber != $weekNumber){
                     $prevYear = (int) $year - 1;
-                    //var_dump($prevYear."-".$year);
                     return $prevYear."-".$year;
                 }
             }
@@ -122,6 +118,7 @@ abstract class BaseClient
         // END check date is in first week of year and shares
         // same week with last year several days
 
+        //not the corner case, so default return key format:
         return "year:".$date->format('Y')."week:".$date->format('W');
     }
 

@@ -9,7 +9,6 @@ class ClientFactory
 {
     private array $clients;
 
-
     public function __construct()
     {
         $this->clients = [];
