@@ -135,7 +135,6 @@ class CommissionFeeTest extends KernelTestCase
         ]);
 
         $commandTester->execute([
-            // pass arguments to the helper
             'csvPath' => 'C:\Users\datso\commission_fee\public\\',
             'fileName' => 'input.scv'
         ]);

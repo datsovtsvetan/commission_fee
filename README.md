@@ -8,10 +8,8 @@ There is also phpUnit Test for it, wich uses the input data from the provided te
 IMPORTANT:
 The class CurrencyMyCustomConverter.php (the name of the class may be better, I know) uses a URL to fetch dynamically the currency rates, so if the rates changes, the phpUnit test will fail. In such a case, replace the first argument in assertSame() method in the end of the test file (comission_fee/tests/Command/CommissionFeeTest.php) with copy=>pasted result from the command when ran by hand just before the test. Use double quotes around it, like how it is now. i.e "0.6\r\n3\r\n0\r\n0.06\r\n1.5\r\n0\r\n0.69\r\n0.34\r\n0.3\r\n3\r\n0\r\n0\r\n8607.4\r\n"
 
-
 Requirements:
 composer, php 8.1
-
 
 Instructions for use:
 
