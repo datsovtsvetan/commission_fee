@@ -80,15 +80,9 @@ abstract class BaseClient
 
         $isOnLastWeek = ($weekNumber == $lastDayOfYearWeekNumber);
 
-        if($isOnLastWeek){
-            for ($i=0;$i<7;$i++){
-                $nextDateWeekNumber = $date->add(new \DateInterval('P'.$i.'D'))
-                    ->format('W');
-                if($nextDateWeekNumber != $weekNumber){
-                    $nextYear = (int) $year + 1;
-                    return $year."-".$nextYear;
-                }
-            }
+        if($isOnLastWeek && $lastDayOfYear->format('j') != 7){
+            $nextYear = (int) $year + 1;
+            return $year."-".$nextYear;
         }
 
         // END check date is in last week of the year...
