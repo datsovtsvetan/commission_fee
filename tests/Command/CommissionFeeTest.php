@@ -136,7 +136,6 @@ class CommissionFeeTest extends KernelTestCase
             'csvPath' => 'C:\Users\datso\commission_fee\public\\',
             'fileName' => 'input.scv'
         ]);
-
         $commandTester->assertCommandIsSuccessful();
 
         $output = $commandTester->getDisplay();
