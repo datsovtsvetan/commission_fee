@@ -20,7 +20,7 @@ class CommissionFeeTest extends KernelTestCase
         $kernel->getContainer()->set('test.'.CsvParser::class, $mockScvParser);
 
         $application = new Application($kernel);
-        $application->setAutoExit(false); // may be problem!
+        $application->setAutoExit(false);
 
         $command = $application->find('app:commission_fee_calculator');
 
