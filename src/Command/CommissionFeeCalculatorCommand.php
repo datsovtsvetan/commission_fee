@@ -21,13 +21,13 @@ class CommissionFeeCalculatorCommand extends Command
 {
     private CsvParser $csvParser;
     private ClientFactory $clientFactory;
-    private CommissionFeeCalculatorInterface $taxSeraCalculator;
+    private CommissionFeeCalculatorInterface $taxCalculator;
 
-    public function __construct(CsvParser $csvParser, ClientFactory $clientFactory, CommissionFeeCalculatorInterface $taxSeraCalculator)
+    public function __construct(CsvParser $csvParser, ClientFactory $clientFactory, CommissionFeeCalculatorInterface $taxCalculator)
     {
         $this->csvParser = $csvParser;
         $this->clientFactory = $clientFactory;
-        $this->taxSeraCalculator = $taxSeraCalculator;
+        $this->taxCalculator = $taxCalculator;
         parent::__construct();
     }
 
@@ -53,13 +53,13 @@ class CommissionFeeCalculatorCommand extends Command
             $tax = 0.0;
 
             if($operation['clientType'] == 'private' && $operation['operationType'] == 'withdraw'){
-                $tax = $this->taxSeraCalculator->calculateWithdrawCommissionFeePrivateClient($client, $operation['date'], $operation['amount'], $operation['currency']);
+                $tax = $this->taxCalculator->calculateWithdrawCommissionFeePrivateClient($client, $operation['date'], $operation['amount'], $operation['currency']);
             }
             if($operation['clientType'] == 'business' && $operation['operationType'] == 'withdraw'){
-                $tax = $this->taxSeraCalculator->calculateWithdrawCommissionFeeBusinessClient($client, $operation['date'], $operation['amount'], $operation['currency']);
+                $tax = $this->taxCalculator->calculateWithdrawCommissionFeeBusinessClient($client, $operation['date'], $operation['amount'], $operation['currency']);
             }
             if($operation['operationType'] == 'deposit'){
-                $tax = $this->taxSeraCalculator->calculateDepositCommissionFee($client, $operation['amount']);
+                $tax = $this->taxCalculator->calculateDepositCommissionFee($client, $operation['amount']);
             }
             $output->writeln($tax);
         }

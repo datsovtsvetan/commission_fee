@@ -82,10 +82,10 @@ abstract class BaseClient
 
         if($isOnLastWeek){
             for ($i=0;$i<7;$i++){
-                $nextDate = $date->add(new \DateInterval('P'.$i.'D'))
+                $nextDateWeekNumber = $date->add(new \DateInterval('P'.$i.'D'))
                     ->format('W');
 
-                if($nextDate != $weekNumber){
+                if($nextDateWeekNumber != $weekNumber){
                     $nextYear = (int) $year + 1;
                     //var_dump($year."-".$nextYear);
                     return $year."-".$nextYear;
@@ -99,7 +99,7 @@ abstract class BaseClient
         // and shares same week with last year several days:
 
         /**
-         * to make sure the format is valid (i.e $date->format('W') => 1 or 01)
+         * to make sure the format returned from is valid (i.e $date->format('W') => 1 or 01)
          * and not brakes if format changes between php versions.
         */
         $firstWeekOfYear = \DateTimeImmutable::createFromFormat("Y-m-d",
@@ -109,10 +109,10 @@ abstract class BaseClient
 
         if($isOnFirstWeek){
             for ($i=0;$i<7;$i++){
-                $prevDate = $date->sub(new \DateInterval('P'.$i.'D'))
+                $prevDateWeekNumber = $date->sub(new \DateInterval('P'.$i.'D'))
                     ->format('W');
 
-                if($prevDate != $weekNumber){
+                if($prevDateWeekNumber != $weekNumber){
                     $prevYear = (int) $year - 1;
                     //var_dump($prevYear."-".$year);
                     return $prevYear."-".$year;

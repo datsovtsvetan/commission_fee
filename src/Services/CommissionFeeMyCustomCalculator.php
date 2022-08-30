@@ -8,13 +8,13 @@ use App\Model\BaseClient;
 use App\Model\BusinessClient;
 use App\Model\PrivateClient;
 
-class CommissionFeeSeraCalculator implements CommissionFeeCalculatorInterface
+class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterface
 {
     private CurrencyConverterInterface $converter;
 
-    public function __construct(CurrencyConverterInterface $converter)
+    public function __construct(CurrencyConverterInterface $customConverter)
     {
-        $this->converter = $converter;
+        $this->converter = $customConverter;
     }
 
     /**

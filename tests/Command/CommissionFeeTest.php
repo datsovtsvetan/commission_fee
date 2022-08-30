@@ -17,7 +17,7 @@ class CommissionFeeTest extends KernelTestCase
         $mockScvParser = $this->getMockBuilder(CsvParser::class)->disableOriginalConstructor()->getMock();
 
 
-        $kernel->getContainer()->set(CsvParser::class, $mockScvParser);
+        $kernel->getContainer()->set('test.'.CsvParser::class, $mockScvParser);
 
         $application = new Application($kernel);
         $application->setAutoExit(false); // may be problem!

@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-class CurrencySeraConverter implements CurrencyConverterInterface
+class CurrencyMyCustomConverter implements CurrencyConverterInterface
 {
     private const CURRENCIES_URL = 'https://developers.paysera.com/tasks/api/currency-exchange-rates';
 

@@ -1,0 +1,8 @@
+services:
+    _defaults:
+        public: true
+
+    test.App\Services\CommissionFeeMyCustomCalculator: '@App\Services\CommissionFeeMyCustomCalculator'
+    test.App\Services\CurrencyMyCustomConverter: '@App\Services\CurrencyMyCustomConverter'
+    test.App\Services\ClientFactory: '@App\Services\ClientFactory'
+    test.App\Services\CsvParser: '@App\Services\CsvParser'
