@@ -16,11 +16,9 @@ class CommissionFeeTest extends KernelTestCase
 
         $mockScvParser = $this->getMockBuilder(CsvParser::class)->disableOriginalConstructor()->getMock();
 
-
         $kernel->getContainer()->set('test.'.CsvParser::class, $mockScvParser);
 
         $application = new Application($kernel);
-        $application->setAutoExit(false); // may be problem!
 
         $command = $application->find('app:commission_fee_calculator');
 
@@ -131,7 +129,6 @@ class CommissionFeeTest extends KernelTestCase
                 "amount"=> "3000000",
                 "currency"=> "JPY"
             ],
-
         ]);
 
         $commandTester->execute([
