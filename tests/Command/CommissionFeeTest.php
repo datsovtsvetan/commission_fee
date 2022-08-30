@@ -19,6 +19,8 @@ class CommissionFeeTest extends KernelTestCase
         $kernel->getContainer()->set('test.'.CsvParser::class, $mockScvParser);
 
         $application = new Application($kernel);
+        
+        $application->setAutoExit(false);
 
         $command = $application->find('app:commission_fee_calculator');
 
@@ -129,6 +131,7 @@ class CommissionFeeTest extends KernelTestCase
                 "amount"=> "3000000",
                 "currency"=> "JPY"
             ],
+
         ]);
 
         $commandTester->execute([
@@ -136,6 +139,7 @@ class CommissionFeeTest extends KernelTestCase
             'csvPath' => 'C:\Users\datso\commission_fee\public\\',
             'fileName' => 'input.scv'
         ]);
+
         $commandTester->assertCommandIsSuccessful();
 
         $output = $commandTester->getDisplay();
