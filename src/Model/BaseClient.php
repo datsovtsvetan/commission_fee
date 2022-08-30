@@ -105,16 +105,17 @@ abstract class BaseClient
 
         $isOnFirstWeek = ($weekNumber == $firstWeekOfYear);
 
-        if($isOnFirstWeek){
-            for ($i=0;$i<7;$i++){
-                $prevDateWeekNumber = $date->sub(new \DateInterval('P'.$i.'D'))
-                    ->format('W');
-                if($prevDateWeekNumber != $weekNumber){
-                    $prevYear = (int) $year - 1;
-                    return $prevYear."-".$year;
-                }
-            }
+        //num representation of day of month without leading zero i.e 1 to 31
+        $day = $date->format('j');
+
+        // ISO 8601 numeric representation of the day of the week
+        $numDayOfWeek = $date->format('N');
+
+        if($isOnFirstWeek && $day < $numDayOfWeek){
+            $prevYear = (int) $year - 1;
+            return $prevYear."-".$year;
         }
+
         // END check date is in first week of year and shares
         // same week with last year several days
 
