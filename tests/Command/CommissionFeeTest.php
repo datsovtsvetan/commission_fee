@@ -3,20 +3,38 @@
 namespace App\Tests\Command;
 
 use App\Services\CsvParser;
+use App\Services\CurrencyMyCustomConverter;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class CommissionFeeTest extends KernelTestCase
 {
-
     public function testCommissionFeeCommand()
     {
         $kernel = self::bootKernel();
 
-        $mockScvParser = $this->getMockBuilder(CsvParser::class)->disableOriginalConstructor()->getMock();
+        $mockScvParser = $this->getMockBuilder(CsvParser::class)
+            ->disableOriginalConstructor()->getMock();
+
+        $mockCurrencyConverter = $this
+            ->getMockBuilder(CurrencyMyCustomConverter::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['fetchCurrenciesFromApi'])
+            ->getMock();
+
+        $mockCurrencyConverter
+            ->expects($this->once())
+            ->method('fetchCurrenciesFromApi')
+            ->willReturn([
+            "JPY" => 130.869977,
+            "USD" => 1.129031,
+            "EUR" => 1,
+        ]);
 
         $kernel->getContainer()->set('test.'.CsvParser::class, $mockScvParser);
+
+        $kernel->getContainer()->set('test.'.CurrencyMyCustomConverter::class, $mockCurrencyConverter);
 
         $application = new Application($kernel);
         
@@ -131,7 +149,6 @@ class CommissionFeeTest extends KernelTestCase
                 "amount"=> "3000000",
                 "currency"=> "JPY"
             ],
-
         ]);
 
         $commandTester->execute([

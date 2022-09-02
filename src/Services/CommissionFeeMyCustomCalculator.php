@@ -17,18 +17,11 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
         $this->converter = $customConverter;
     }
 
-    /**
-     * this method rounds always up, i.e. 0.21 becomes 0.3
-     */
-    private function roundUp(float $value, int $precision = 2): float
-    {
-        $pow = \pow(10, $precision);
-        return (\ceil($pow * $value)
-                + \ceil($pow * $value - \ceil($pow * $value))) / $pow;
-    }
-
-
-    public function calculateWithdrawCommissionFeePrivateClient(PrivateClient $client, \DateTimeImmutable $date, float $amount, string $currency): float|int
+    public function calculateWithdrawCommissionFeePrivateClient(
+        PrivateClient $client,
+        \DateTimeImmutable $date,
+        float $amount,
+        string $currency): float|int
     {
         $prevAmount = $client->getWithdrawnAmountByWeek($date);
         $isUnderFreeLimitAmount = $prevAmount
@@ -67,17 +60,21 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
 
         if($isUnderFreeLimitAmount) {
             return $this->calculateDiff($client,
-                $prevAmount, $amount,
+                $prevAmount,
+                $amount,
                 $currency,
-                false );
+                false);
         }
 
         $resultUnrounded = $amount * $client->getWithdrawPercent();
         return $this->roundUp($resultUnrounded);
     }
 
-
-    public function calculateWithdrawCommissionFeeBusinessClient(BusinessClient $client, \DateTimeImmutable $date, float $amount, string $currency): float|int
+    public function calculateWithdrawCommissionFeeBusinessClient(
+        BusinessClient $client,
+        \DateTimeImmutable $date,
+        float $amount,
+        string $currency): float|int
     {
         $client->withdraw($date, $amount);
         $resultUnrounded = $amount * $client->getWithdrawPercent();
@@ -85,7 +82,9 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
         return $this->roundUp($resultUnrounded);
     }
 
-    public function calculateDepositCommissionFee(BaseClient $client, string $amount):float
+    public function calculateDepositCommissionFee(
+        BaseClient $client,
+        string $amount):float
     {
         $resultUnrounded = $amount * $client->getDepositPercent();
 
@@ -94,12 +93,19 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
 
     /**
      * This method calculates the diff betweeen the current withdraw and the
-     * free limit (used only if currently below the limit!) and calculates the commission fee only on the exceeded amount.
+     * free limit (used only if currently below the limit!) and calculates
+     * the commission fee only on the exceeded amount.
      */
-    private function calculateDiff($client, $prevAmount, $amount, $currency, $isConversionNeeded):float
+    private function calculateDiff(
+        $client,
+        $prevAmount,
+        $amount,
+        $currency,
+        $isConversionNeeded):float
     {
         if($isConversionNeeded) {
-            $convertedFullAmount = $this->converter->convert($amount, $currency, $client::ACCOUNT_CURRENCY);
+            $convertedFullAmount = $this->converter
+                ->convert($amount, $currency, $client::ACCOUNT_CURRENCY);
             $taxedAmount = ($prevAmount + $convertedFullAmount)
                 - $client::FREE_LIMIT_WITHDRAW_AMOUNT;
 
@@ -119,15 +125,31 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
         return $this->roundUp($resultUnrounded);
     }
 
-    private function doWithdraw($client, $date, $amount, $currency, $isConversionNeeded):void
+    private function doWithdraw(
+        $client,
+        $date,
+        $amount,
+        $currency,
+        $isConversionNeeded):void
     {
         if($isConversionNeeded){
             $client->withdraw($date,
-                $this->converter->convert($amount,
+                $this->converter->convert(
+                    $amount,
                     $currency,
                     $client::ACCOUNT_CURRENCY));
         } else {
             $client->withdraw($date, $amount);
         }
+    }
+
+    /**
+     * this method rounds always up, i.e. 0.21 becomes 0.3
+     */
+    private function roundUp(float $value, int $precision = 2): float
+    {
+        $pow = pow(10, $precision);
+        return (ceil($pow * $value)
+                + ceil($pow * $value - ceil($pow * $value))) / $pow;
     }
 }

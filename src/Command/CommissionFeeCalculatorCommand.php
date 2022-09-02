@@ -3,13 +3,20 @@
 namespace App\Command;
 
 use App\Interfaces\CommissionFeeCalculatorInterface;
+use App\Interfaces\CurrencyConverterInterface;
 use App\Services\ClientFactory;
 use App\Services\CsvParser;
+use App\Services\CurrencyMyCustomConverter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
 #[AsCommand(
     name: 'app:commission_fee_calculator',
@@ -23,7 +30,11 @@ class CommissionFeeCalculatorCommand extends Command
     private ClientFactory $clientFactory;
     private CommissionFeeCalculatorInterface $taxCalculator;
 
-    public function __construct(CsvParser $csvParser, ClientFactory $clientFactory, CommissionFeeCalculatorInterface $taxCalculator)
+    public function __construct(
+        CsvParser $csvParser,
+        ClientFactory $clientFactory,
+        CommissionFeeCalculatorInterface $taxCalculator
+    )
     {
         $this->csvParser = $csvParser;
         $this->clientFactory = $clientFactory;
@@ -44,11 +55,9 @@ class CommissionFeeCalculatorCommand extends Command
         $fileName = $input->getArgument('fileName');
         $csvArray = $this->csvParser->parseCsv($csvPath, $fileName);
 
-        foreach ($csvArray as $record){
-            $this->clientFactory->createClientIfNotExist($record['clientId'], $record['clientType']);
-        }
-
         foreach ($csvArray as $operation){
+            $this->clientFactory->createClientIfNotExist($operation['clientId'], $operation['clientType']);
+
             $client = $this->clientFactory->findById($operation['clientId']);
             $tax = 0.0;
 
