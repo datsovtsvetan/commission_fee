@@ -13,7 +13,7 @@ class CsvParser
         $this->finder = $finder;
     }
 
-    public function parseCsv($csvPath, $fileName): array
+    public function parseCsv(string $csvPath, string $fileName): array
     {
         $this->finder->files()
             ->in($csvPath)

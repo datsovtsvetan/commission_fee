@@ -27,10 +27,10 @@ class CommissionFeeTest extends KernelTestCase
             ->expects($this->once())
             ->method('fetchCurrenciesFromApi')
             ->willReturn([
-            "JPY" => 130.869977,
-            "USD" => 1.129031,
-            "EUR" => 1,
-        ]);
+                "JPY" => 129.53,
+                "USD" => 1.1497,
+                "EUR" => 1,
+            ]);
 
         $kernel->getContainer()->set('test.'.CsvParser::class, $mockScvParser);
 
@@ -160,6 +160,6 @@ class CommissionFeeTest extends KernelTestCase
 
         $output = $commandTester->getDisplay();
 
-        $this->assertSame("0.6\r\n3\r\n0\r\n0.06\r\n1.5\r\n0\r\n0.69\r\n0.34\r\n0.3\r\n3\r\n0\r\n0\r\n8607.4\r\n", $output);
+        $this->assertSame("0.6\r\n3\r\n0\r\n0.06\r\n1.5\r\n0\r\n0.7\r\n0.3\r\n0.3\r\n3\r\n0\r\n0\r\n8612\r\n", $output);
     }
 }

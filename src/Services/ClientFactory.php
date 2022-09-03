@@ -24,12 +24,12 @@ class ClientFactory
 
         switch ($type) {
             case 'private':
-                $newClient = new PrivateClient($id);
-                $this->clients[] = $newClient;
+                $newPrivateClient = new PrivateClient($id);
+                $this->clients[] = $newPrivateClient;
                 break;
             case 'business':
-                $newClient = new BusinessClient($id);
-                $this->clients[] = $newClient;
+                $newBusinessClient = new BusinessClient($id);
+                $this->clients[] = $newBusinessClient;
                 break;
         }
 

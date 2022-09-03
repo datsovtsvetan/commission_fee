@@ -38,7 +38,8 @@ abstract class BaseClient
         }
     }
 
-    public function getWithdrawnAmountByWeek(\DateTimeImmutable $date):float|int
+    public function getWithdrawnAmountByWeek(
+        \DateTimeImmutable $date):float|int
     {
         $key = $this->getWeekKey($date);
         if(isset($this->withdrawsPerWeek[$key][self::AMOUNT])){
@@ -65,7 +66,8 @@ abstract class BaseClient
 
     /**
      * This key is used as identifier of the week that the withdraw is performed
-     * Weeks that share days from different adjacent years are also considered and in format like '2021-2022'
+     * Weeks that share days from different adjacent years
+     * are also considered and in format like '2021-2022'
      * All other weeks within same year are in format like 'year:2022week:34'
      */
     private function getWeekKey(\DateTimeImmutable $date):string
@@ -91,11 +93,14 @@ abstract class BaseClient
         // and shares same week with last year several days:
 
         /**
-         * to make sure the format returned from is valid (i.e $date->format('W') => 1 or 01)
+         * to make sure the format returned from is valid
+         * (i.e $date->format('W') => 1 or 01)
          * and not brakes if format changes between php versions.
         */
-        $firstWeekOfYear = \DateTimeImmutable::createFromFormat("Y-m-d",
-            "$year-01-01")->format('W');
+        $firstWeekOfYear = \DateTimeImmutable::createFromFormat(
+            "Y-m-d",
+            "$year-01-01")
+            ->format('W');
 
         $isOnFirstWeek = ($weekNumber == $firstWeekOfYear);
 

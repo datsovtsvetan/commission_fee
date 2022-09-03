@@ -32,12 +32,18 @@ class CurrencyMyCustomConverter implements CurrencyConverterInterface
     }
 
     /**
-     * both args must be 3 letters abbreviations of real currencies
-     * fetching the most current rates every time the method is used, on purpose.
+     * Both '$from' and '$to' args must be 3 letters abbreviations
+     * of real, existing currencies.
+     * The if check for empty is because in the phpUnit test the constructor
+     * is disabled, so only the first time convert() is called, it fetches
+     * the currencies rates from API.
      */
-    public function convert(float $amount, string $from, string $to = 'EUR'):float
+    public function convert(
+        float $amount,
+        string $from,
+        string $to = 'EUR'):float
     {
-        if(!isset($this->currencies) || empty($this->currencies)){
+        if(empty($this->currencies)){
             try {
                 $this->currencies = $this->fetchCurrenciesFromApi();
             } catch (ClientExceptionInterface |
@@ -54,7 +60,7 @@ class CurrencyMyCustomConverter implements CurrencyConverterInterface
 
         $conversion_rate  = $this->currencies[$from] / $this->currencies[$to];
 
-        return round ($amount / $conversion_rate, 2);
+        return  $amount / $conversion_rate;
     }
 
     /**

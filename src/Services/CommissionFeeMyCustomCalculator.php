@@ -11,6 +11,7 @@ use App\Model\PrivateClient;
 class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterface
 {
     private CurrencyConverterInterface $converter;
+    private array $currenciesDecimalPoint = ['EUR' => 2, 'USD' => 2, 'JPY' => 0];
 
     public function __construct(CurrencyConverterInterface $customConverter)
     {
@@ -40,34 +41,19 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
             return 0.0;
         }
 
-        if($isConversionNeeded) {
-
-            if($isUnderFreeLimitAmount) {
-                return $this->calculateDiff($client,
-                    $prevAmount,
-                    $amount,
-                    $currency,
-                    true );
-            }
-
-            $fullAmountInOrgCurrency = $this->converter
-                ->convert($amount, $client::ACCOUNT_CURRENCY, $currency);
-            $resultUnrounded = $fullAmountInOrgCurrency
-                * $client->getWithdrawPercent();
-
-            return $this->roundUp($resultUnrounded);
-        }
-
-        if($isUnderFreeLimitAmount) {
-            return $this->calculateDiff($client,
+        if($isUnderFreeLimitAmount){
+            return $this->calculateDiff(
+                $client,
                 $prevAmount,
                 $amount,
                 $currency,
-                false);
+                $isConversionNeeded);
         }
 
-        $resultUnrounded = $amount * $client->getWithdrawPercent();
-        return $this->roundUp($resultUnrounded);
+        $resultUnrounded = $amount
+            * $client->getWithdrawPercent();
+
+        return $this->roundUp($resultUnrounded, $currency);
     }
 
     public function calculateWithdrawCommissionFeeBusinessClient(
@@ -79,16 +65,17 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
         $client->withdraw($date, $amount);
         $resultUnrounded = $amount * $client->getWithdrawPercent();
 
-        return $this->roundUp($resultUnrounded);
+        return $this->roundUp($resultUnrounded, $currency);
     }
 
     public function calculateDepositCommissionFee(
         BaseClient $client,
-        string $amount):float
+        string $amount,
+        string $currency):float
     {
         $resultUnrounded = $amount * $client->getDepositPercent();
 
-        return $this->roundUp($resultUnrounded);
+        return $this->roundUp($resultUnrounded, $currency);
     }
 
     /**
@@ -103,6 +90,7 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
         $currency,
         $isConversionNeeded):float
     {
+
         if($isConversionNeeded) {
             $convertedFullAmount = $this->converter
                 ->convert($amount, $currency, $client::ACCOUNT_CURRENCY);
@@ -111,10 +99,11 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
 
             $taxedAmountToOrgCurrency = $this->converter
                 ->convert($taxedAmount, $client::ACCOUNT_CURRENCY, $currency);
+
             $resultUnrounded = $taxedAmountToOrgCurrency
                 * $client->getWithdrawPercent();
 
-            return $this->roundUp($resultUnrounded);
+            return $this->roundUp($resultUnrounded, $currency);
         }
 
         $taxedAmount = ($prevAmount + $amount)
@@ -122,7 +111,7 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
 
         $resultUnrounded = $taxedAmount * $client->getWithdrawPercent();
 
-        return $this->roundUp($resultUnrounded);
+        return $this->roundUp($resultUnrounded, $client::ACCOUNT_CURRENCY);
     }
 
     private function doWithdraw(
@@ -146,9 +135,12 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
     /**
      * this method rounds always up, i.e. 0.21 becomes 0.3
      */
-    private function roundUp(float $value, int $precision = 2): float
+    private function roundUp(float $value, string $currency): float
     {
-        $pow = pow(10, $precision);
+        if($this->currenciesDecimalPoint[$currency] == 0){
+            return ceil($value);
+        }
+        $pow = pow(10, $this->currenciesDecimalPoint[strtoupper($currency)]);
         return (ceil($pow * $value)
                 + ceil($pow * $value - ceil($pow * $value))) / $pow;
     }
