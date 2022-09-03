@@ -22,7 +22,9 @@ abstract class BaseClient
         return $this->id;
     }
 
-    public function withdraw(\DateTimeImmutable $dateTime, float $amount):void
+    public function withdraw(
+        \DateTimeImmutable $dateTime,
+        float $amount):void
     {
         $key = $this->getWeekKey($dateTime);
 
@@ -65,10 +67,12 @@ abstract class BaseClient
     }
 
     /**
-     * This key is used as identifier of the week that the withdraw is performed
+     * This key is used as identifier of the week that
+     * the withdraw is performed
      * Weeks that share days from different adjacent years
      * are also considered and in format like '2021-2022'
-     * All other weeks within same year are in format like 'year:2022week:34'
+     * All other weeks within same year
+     * are in format like 'year:2022week:34'
      */
     private function getWeekKey(\DateTimeImmutable $date):string
     {
@@ -104,7 +108,8 @@ abstract class BaseClient
 
         $isOnFirstWeek = ($weekNumber == $firstWeekOfYear);
 
-        //num representation of day of month without leading zero i.e 1 to 31
+        //num representation of day of month without leading zero
+        // i.e 1 to 31
         $day = $date->format('j');
 
         // ISO 8601 numeric representation of the day of the week
