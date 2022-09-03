@@ -134,13 +134,17 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
 
     /**
      * this method rounds always up, i.e. 0.21 becomes 0.3
+     * If a currency has not a decimal point like 'JPY', it rounds up
+     * to next integer, i.e. 123.1 becomes 124.
      */
     private function roundUp(float $value, string $currency): float
     {
+        $currency = trim(strtoupper($currency));
+
         if($this->currenciesDecimalPoint[$currency] == 0){
             return ceil($value);
         }
-        $pow = pow(10, $this->currenciesDecimalPoint[strtoupper($currency)]);
+        $pow = pow(10, $this->currenciesDecimalPoint[$currency]);
         return (ceil($pow * $value)
                 + ceil($pow * $value - ceil($pow * $value))) / $pow;
     }
