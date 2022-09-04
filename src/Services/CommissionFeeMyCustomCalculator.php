@@ -11,7 +11,16 @@ use App\Model\PrivateClient;
 class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterface
 {
     private CurrencyConverterInterface $converter;
-    private array $currenciesDecimalPoint = ['EUR' => 2, 'USD' => 2, 'JPY' => 0];
+
+    /**
+     * Add more currencies (as special case) that are not with
+     * the default 2 decimal places i.e. like 'JPY'.
+     * If a currency is not found here, the currency will default with
+     * 2 decimal places in roundUp() method i.e. 0.25.
+     * So here 'EUR' and 'USD' being set with the default value (=> 2) are
+     * added only as example.
+     */
+    private array $currenciesDecimalPoints = ['EUR' => 2, 'USD' => 2, 'JPY' => 0];
 
     public function __construct(CurrencyConverterInterface $customConverter)
     {
@@ -133,18 +142,29 @@ class CommissionFeeMyCustomCalculator implements CommissionFeeCalculatorInterfac
     }
 
     /**
-     * this method rounds always up, i.e. 0.21 becomes 0.3
+     * This method rounds always up, i.e. 0.21 becomes 0.3
      * If a currency has not a decimal point like 'JPY', it rounds up
-     * to next integer, i.e. 123.1 becomes 124.
+     * to next whole integer value, i.e. 123.1 becomes 124 (but the
+     * return type is still float though).
+     * If a currency is not found (as special case)
+     * in $this->currenciesDecimalPoint[], the default precision is 2.
+     * i.e. 0.25
      */
-    private function roundUp(float $value, string $currency): float
+    private function roundUp(float $value, string $currency, int $precision = 2): float
     {
         $currency = trim(strtoupper($currency));
 
-        if($this->currenciesDecimalPoint[$currency] == 0){
+        if(isset($this->currenciesDecimalPoints[$currency])
+            && $this->currenciesDecimalPoints[$currency] == 0){
             return ceil($value);
         }
-        $pow = pow(10, $this->currenciesDecimalPoint[$currency]);
+
+        if(isset($this->currenciesDecimalPoints[$currency])
+            && $this->currenciesDecimalPoints[$currency] != 0){
+            $precision = $this->currenciesDecimalPoints[$currency];
+        }
+
+        $pow = pow(10, $precision);
         return (ceil($pow * $value)
                 + ceil($pow * $value - ceil($pow * $value))) / $pow;
     }
